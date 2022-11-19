@@ -78,6 +78,7 @@ contract Elections {
         bool unique_winner = false;
         uint max_votes = 0;
         uint winner = -1;
+        uint total_votes = 0;
         for(uint8 i =0 ; i < votes.length;i++){
              if(votes[i] > max_votes){
                  max_votes = votes[i];
@@ -86,7 +87,12 @@ contract Elections {
              }else if(votes[i] == max_votes){
                  unique_winner = true;
              }
+             total_votes += votes[i];
         }
+        require(
+            total_votes / voters.length > 0.5, 
+            "This election is cancelled due to lack of votes recieved."
+        );
         if(unique_winner){
             result_to_publish = candidates[winner];
         }else{
