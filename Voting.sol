@@ -31,6 +31,10 @@ contract Elections {
         candidates = _candidates;
     }
 
+    function time_check() public view returns(bool){
+        return block.timestamp >= date_of_end;
+    }
+
     function register_voters (address[] memory _voters) public {
         // check kardan in ke admin bashe
         require (
@@ -71,9 +75,9 @@ contract Elections {
     //elam natije
     function result () public view returns(string memory){
         //barresi etmam voting
-        //require(){
-            // , "Voting have'nt been closed yet"
-        // };
+        require(
+           time_check() , "Voting have'nt been closed yet"
+        );
         string memory result_to_publish = "";
         bool unique_winner = false;
         uint max_votes = 0;
