@@ -29,7 +29,17 @@ contract Elections {
         date_of_start = _date_of_start;
         date_of_end = _date_of_end;
         candidates = _candidates;
+        //votes map initialized
+        for (uint8 i = 0 ; i < _candidates.length;i++){
+            votes[_candidates[i]] = 0;
+        }
     }
+
+
+    function time_check() public view returns(bool){
+        return block.timestamp >= date_of_end;
+    }
+
 
     function register_voters (address[] memory _voters) public {
         // check kardan in ke admin bashe
@@ -66,13 +76,43 @@ contract Elections {
     //baray ray dadan
     function vote (string memory _elected) public {
         Voter voter = voters[msg.sender];
+        /*
+            check kardan in ke ye bar ray bede 
+        */
+        require(
+            !voter.is_voted,
+            "You can't vote twice"
+        );
+        /*
+            check kardan in ke sabt nam shode bashe 
+        */
+        require(
+            !voter.is_registerd,
+            "You are not registerd" 
+        );
+        /*
+            check kardan in ke zaman doroste 
+        */
+        require(
+            time_check,
+            "time is over"
+        );
+        
+        votes[_elected]++;
+        voter.elected = _elected;
+
+    }
+
+
+    function set_date_of_end (uint memory _date_of_end) {
+
     }
 
     //elam natije
     function result () public view returns(string memory){
         //barresi etmam voting
         require(
-           block.timestamp >= date_of_end , "Voting have'nt been closed yet"
+           time_check() , "Voting have'nt been closed yet"
         );
         string memory result_to_publish = "";
         bool unique_winner = false;
